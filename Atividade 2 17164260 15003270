@@ -25,11 +25,11 @@ int existeAluno(int ra, int tamanho, aluno *alunos);
 int existeAlunoPorNome(char *nome, int tamanho, aluno *alunos);
 void buscarAluno(int ra, int tamanho, aluno *alunos);
 void buscarAlunoPorNome(char *nome, int tamanho, aluno *alunos);
-int removeAlunoPorRA(aluno lista[],int tamanho, int ra);
+int removeAlunoPorRA(aluno *alunos,int tamanho, int ra);
 
 int main(void) {
 	aluno alunos[100];
-	int opcao, i, qtd, raAtual, qtdTotal = 0, ocorre=0;
+	int opcao, i, qtd, raAtual, qtdTotal = 0, ocorre=0, parada=0;
 	char nomeAtual[50];
 	printf("\e[H\e[2J");// Esse comando limpa a tela do Terminal
         do {
@@ -43,7 +43,28 @@ int main(void) {
 			printf("Digite quantos alunos serao cadastrados:\n");
 			scanf("%d", &qtd);
 			//alunos = (aluno *)malloc(qtd * sizeof(aluno));
-			for (i = 0; i < qtd; i++) {
+                        if(qtdTotal != 0){
+                            parada = qtd + qtdTotal;
+                            for(i=qtdTotal;i<parada;i++){
+                                printf("Digite o ra do aluno:\n");
+				scanf("%d", &raAtual);
+				if (existeAluno(raAtual, qtdTotal, alunos) == 0) {
+					alunos[i].ra = raAtual;
+					printf("Digite o nome do aluno:\n");
+					scanf("%s", alunos[i].nome);
+					printf("Digite o nota do aluno:\n");
+					scanf("%lf", &alunos[i].nota);
+					printf("Aluno cadastrado com sucesso!\n");
+					qtdTotal++;
+				}
+				else {
+					printf("Ja existe um aluno com esse RA!\n");
+					i--;
+				}
+                            }
+                        }
+                        else{
+                            for (i = 0; i < qtd; i++) {
 				printf("Digite o ra do aluno:\n");
 				scanf("%d", &raAtual);
 				if (existeAluno(raAtual, qtdTotal, alunos) == 0) {
@@ -62,6 +83,8 @@ int main(void) {
 
 
 			}
+                        }
+			qtd=0;
 			printf("\e[H\e[2J");
 			break;
 		case excluiAluno:
@@ -84,7 +107,7 @@ int main(void) {
 		case buscaRA:
 			printf("Digite o ra do aluno:\n");
 			scanf("%d", &raAtual);
-			if (existeAluno(raAtual, qtd, alunos) == 1) {
+			if (existeAluno(raAtual, qtdTotal, alunos) == 1) {
 				buscarAluno(raAtual, qtd, alunos);
 			}
 			else {
@@ -95,8 +118,8 @@ int main(void) {
 		case buscaNome:
 			printf("Digite o nome do aluno:\n");
 			scanf("%s", nomeAtual);
-			if (existeAlunoPorNome(nomeAtual, qtd, alunos) == 1) {
-				buscarAlunoPorNome(nomeAtual, qtd, alunos);
+			if (existeAlunoPorNome(nomeAtual, qtdTotal, alunos) == 1) {
+				buscarAlunoPorNome(nomeAtual, qtdTotal, alunos);
 			}
 			else {
 				printf("Aluno nao esta cadastrado!\n");
@@ -129,6 +152,7 @@ void exibeMenu(){
     printf("%d) Buscar por Nome.\n", buscaNome);
     printf("%d) Imprime todos os alunos.\n", imprimir);
     printf("%d) Sair.\n", sair);
+    printf("Opcao: ");
 }
 
 int existeAluno(int ra, int tamanho, aluno *alunos) {
@@ -171,16 +195,16 @@ void buscarAlunoPorNome(char *nome, int tamanho, aluno *alunos) {
 	}
 }
 
-int removeAlunoPorRA(aluno lista[], int tamanho,int ra){
+int removeAlunoPorRA(aluno *alunos, int tamanho,int ra){
     int j, i;
     printf("Remover Aluno\n");
     for (j = 0; j < tamanho; j++) {
-        if (lista[j].ra == ra) {
+        if (alunos[j].ra == ra) {
             if(j == tamanho-1){
                 return 1;
             }
             for(i=j;i<tamanho;i++){
-                lista[i] = lista[i+1];
+                alunos[i] = alunos[i+1];
             }
             return 1; //true
         }
